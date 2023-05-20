@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from "axios";
+import personService from "./services/persons";
+
+const Button = (props) => {
+  console.log(props)
+  return (
+      <button type={props.type} onClick={props.handleClick}>{props.text}</button>
+  )
+}
 
 const Filter = ({textLabel, value, handleChange}) => {
   return (
@@ -19,7 +27,7 @@ const PersonForm = ({onSubmitHandle, newName, newPhoneNumber, handleChangeName, 
           Phone Number: <input value={newPhoneNumber} onChange={handleChangeNumber} />
         </div>
         <div>
-          <button type="submit">Add</button>
+          <Button type="submit" text="Add"/>
         </div>
     </form>
   )
@@ -41,8 +49,8 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get("http://localhost:3001/persons")
+    personService
+      .getAll()
       .then(response => {
         console.log("promise fulfilled")
         console.log(response.data)
@@ -59,15 +67,41 @@ const App = () => {
       phoneNumber: newPhoneNumber, 
     }
     const checkDuplicateName = persons.find(props => props.name.toLowerCase() === newPerson.name.toLowerCase())
-    if(checkDuplicateName) {
+    const personToChange = {...checkDuplicateName, phoneNumber:newPhoneNumber}
+
+    if(checkDuplicateName && checkDuplicateName.phoneNumber === newPerson.phoneNumber) {
       window.alert(`${newName} is already present in the phonebook`)
     }
-    else {
-      setPersons(persons.concat(newPerson));
+    else if(checkDuplicateName && checkDuplicateName.phoneNumber !== newPerson.phoneNumber) {
+      if(window.confirm(`${newName} is already present in the phonebook, would you like to replace the old phone number with a new one?`)) {
+        personService
+          .updatePerson(checkDuplicateName.id, personToChange) 
+          .then(personToReturn => {
+            setPersons(persons.map(n => n.id !== checkDuplicateName.id ? n : personToReturn))
+            setNewName("")
+            setNewPhoneNumber("")
+          })
+      }
     }
-    setNewName("");
-    setNewPhoneNumber("");
+    else {
+      personService
+        .create(newPerson)
+        .then(personToReturn => {
+          setPersons(persons.concat(personToReturn))
+          setNewName("")
+          setNewPhoneNumber("")
+        })
+    }
   }
+
+  const deletePerson = (id) => {
+    const personToDelete = persons.find(n => n.id === id)
+    if(window.confirm(`Are you sure you want to delete ${personToDelete.name} ?`)) {
+      personService
+        .deletePerson(id)
+        setPersons(persons.filter(persons => persons.id !== id))
+    }
+  } 
 
   const handleNameAddition = (event) => {
     console.log(event.target.value);
@@ -86,7 +120,13 @@ const App = () => {
   const searched = persons.map(props => props.name.toLowerCase().includes(searchName.toLowerCase())) ?
   persons.filter(props => props.name.toLowerCase().includes(searchName.toLowerCase())): persons
 
-  const searchResult = searched.map((person) => <p>{person.name} {person.phoneNumber}</p>)
+  const SinglePerson = ({name, phoneNumber, id}) => {
+    return (
+      <p>{name} {phoneNumber} <Button type="submit" text="Delete Person" handleClick={() => deletePerson(id)}/> </p>
+    )
+  }
+
+  const searchResult = searched.map(props => <SinglePerson key={props.id} name={props.name} phoneNumber={props.phoneNumber} id={props.id} />)
   return (
     <div>
       <h2>Phonebook</h2>
