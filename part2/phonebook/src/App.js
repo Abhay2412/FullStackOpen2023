@@ -43,18 +43,11 @@ const PersonForm = ({onSubmitHandle, newName, newPhoneNumber, handleChangeName, 
     </form>
   )
 }
-const SinglePerson = ({person, deletePerson}) => {
-  return (
-    <p key={person.id}> {person.name} {person.phoneNumber} <Button type="submit" text="Delete Person" handleClick={() => deletePerson(person.id)}/> </p>
-  )
-}
 
-const Persons = ({searchResult, deletePerson}) => {
+const Persons = ({searchResult}) => {
   return(
-    <div >
-      <p>
-        {searchResult.map(person => <SinglePerson key={person.id} person={person} deletePerson={deletePerson}/>)}
-      </p>
+    <div>
+      {searchResult}
     </div>
   )
 }
@@ -72,8 +65,8 @@ const App = () => {
     .getAll()
     .then(response => {
       console.log("promise fulfilled")
-      console.log(response.data)
-      setPersons(response.data)
+      console.log(response)
+      setPersons(response)
     })
     .catch(error => console.error(error))
   }, [])
@@ -87,43 +80,47 @@ const App = () => {
     }
     const checkDuplicateName = persons.find(props => props.name.toLowerCase() === newPerson.name.toLowerCase())
     
-    if(checkDuplicateName && checkDuplicateName.phoneNumber === newPhoneNumber) {
+    if(checkDuplicateName && checkDuplicateName.phoneNumber === newPerson.phoneNumber) {
       window.alert(`${newName} is already present in the phonebook`)
     }
-    if(checkDuplicateName && checkDuplicateName.phoneNumber !== newPhoneNumber) {
+    else if(checkDuplicateName && checkDuplicateName.phoneNumber !== newPerson.phoneNumber) {
       if(window.confirm(`${newName} is already present in the phonebook, would you like to replace the old phone number with a new one?`)) {
         const personToChange = {...checkDuplicateName, phoneNumber:newPhoneNumber}
         personService
         .updatePerson(checkDuplicateName.id, personToChange) 
-          .then(personToReturn => {
-            setPersons(persons.map(n => n.id !== checkDuplicateName.id ? n : personToReturn))
-            setNotificationMessage({
-              text: `${checkDuplicateName.name}'s number was updated.`,
-              type: "notification"
-            })
-            setTimeout(() => setNotificationMessage(null), 5000)      
+        .then(personToReturn => {
+          setPersons(persons.map(n => n.id !== checkDuplicateName.id ? n : personToReturn))
+          setNewName("")
+          setNewPhoneNumber("")
+          setNotificationMessage({
+            text: `${checkDuplicateName.name}'s number was updated.`,
+            type: "notification"
           })
+          setTimeout(() => setNotificationMessage(null), 5000)      
+        })
           .catch(error =>
             setPersons(persons
               .filter(person => 
                 person.name !== checkDuplicateName.name
-              )
-            )
-          )
-            setNotificationMessage({
-              text: `${checkDuplicateName.name} has already been removed from the server`,
-              type: "error"
+                )
+                )
+                )
+                setNotificationMessage({
+                  text: `${checkDuplicateName.name} has already been removed from the server`,
+                  type: "error"
             })
             setTimeout(() => {
               setNotificationMessage(null)
             }, 5000)
-      }
-    }
-    if(!checkDuplicateName) {
+          }
+        }
+        else {
       personService
         .create(newPerson)
         .then(personToReturn => {
-        setPersons(persons.concat(personToReturn))
+          setPersons(persons.concat(personToReturn))
+          setNewName("")
+          setNewPhoneNumber("")
         })
         .catch(error => {
           setNotificationMessage({
@@ -134,52 +131,58 @@ const App = () => {
             setNotificationMessage(null)
           }, 5000)
         })
-      setNotificationMessage({
+        setNotificationMessage({
           text: `${newPerson.name} successfully added to the phonebook.`,
           type: "notification"
         })
         setTimeout(() => {
           setNotificationMessage(null)
         }, 5000)
+      }
     }
-    setNewName("")
-    setNewPhoneNumber("")
-  }
-
+    
   const deletePerson = (id) => {
     const personToDelete = persons.find(n => n.id === id)
     if(window.confirm(`Are you sure you want to delete ${personToDelete.name} ?`)) {
       personService
-        .deletePerson(id)
-        .then(personToReturn => {
-          persons.map(personToDelete => personToDelete.id !== id ? personToDelete : personToReturn)
-        })
-        setPersons(persons.filter(persons => persons.id !== id))
-        setNotificationMessage({
-          text: `${personToDelete.name} was successfully deleted from the phonebook.`,
-          type: "notification"
-        })
-        setTimeout(() => {
-          setNotificationMessage(null)
+      .deletePerson(id)
+      .then(personToReturn => {
+        persons.map(personToDelete => personToDelete.id !== id ? personToDelete : personToReturn)
+      })
+      setPersons(persons.filter(persons => persons.id !== id))
+      setNotificationMessage({
+        text: `${personToDelete.name} was successfully deleted from the phonebook.`,
+        type: "notification"
+      })
+      setTimeout(() => {
+        setNotificationMessage(null)
         }, 5000)
+      }
+    } 
+    
+    const handleNameAddition = (event) => {
+      console.log(event.target.value);
+      setNewName(event.target.value);
     }
-  } 
-
-  const handleNameAddition = (event) => {
-    console.log(event.target.value);
-    setNewName(event.target.value);
-  }
-
-  const handlePhoneNumberAddition = (event) => {
-    console.log(event.target.value);
+    
+    const handlePhoneNumberAddition = (event) => {
+      console.log(event.target.value);
     setNewPhoneNumber(event.target.value);
   }
-
+  
   const handleSearch = (event) => {
     console.log(event.target.value);
     setSearchName(event.target.value);
   }
   const searched = searchName === "" ? persons : persons.filter(person => person.name.toLowerCase().includes(searchName.toLowerCase()))
+  
+  const SinglePerson = ({name, phoneNumber, id}) => {
+    return (
+      <p key={id}> {name} {phoneNumber} <Button type="submit" text="Delete Person" handleClick={() => deletePerson(id)}/> </p>
+    )
+  }
+  
+  const searchResult = searched.map(props => <SinglePerson key={props.id} name={props.name} phoneNumber={props.phoneNumber} id={props.id}/>)
 
   return (
     <div>
@@ -195,7 +198,7 @@ const App = () => {
 
       <h3>Numbers</h3>
       
-      <Persons searchResult={searched} deletePerson={deletePerson} />
+      <Persons searchResult={searchResult}/>
     
     </div>
   )
