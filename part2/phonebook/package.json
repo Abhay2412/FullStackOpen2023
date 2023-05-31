@@ -40,5 +40,8 @@
   "devDependencies": {
     "json-server": "^0.17.3"
   },
+  "overrides": {
+    "webpack":"5.82.1"
+  },
   "proxy": "http://localhost:3001"
 }
