@@ -2,7 +2,7 @@ POST http://localhost:3001/api/persons/
 Content-Type: application/json
 
 {
-    "name": "Barry Allen",
-    "number": "587-456-2310"
+    "name": "John Cena",
+    "number": "985-632-1201"
 
 }
