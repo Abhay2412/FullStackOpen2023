@@ -8,8 +8,8 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf build && cd ../part2/phonebook && npm run build && cp -r build ../../part3 && npm install",
-    "deploy:full": "npm run build:ui && git add . && git commit -m ProductionBuild && git push"
-    
+    "deploy:full": "npm run build:ui && git add . && git commit -m ProductionBuild && git push",
+    "lint": "eslint ."
   },
   "author": "Abhay Khosla",
   "license": "MIT",
@@ -21,6 +21,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^8.41.0",
     "nodemon": "^2.0.22"
   }
 }
