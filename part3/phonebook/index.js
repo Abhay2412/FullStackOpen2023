@@ -60,7 +60,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
 
 const postMorgan = morgan(':method :url :status :res[content-length] - :response-time ms :body')
 
-app.post("/api/persons", postMorgan, (request, response) => {
+app.post("/api/persons", postMorgan, (request, response, next) => {
   const body = request.body
   // const personName = persons.map(persons => persons.name)
   // const personName = Person.map(persons => persons.name)
@@ -85,6 +85,7 @@ app.post("/api/persons", postMorgan, (request, response) => {
     person.save().then(personToAdd => {
       response.json(personToAdd)
     })
+    .catch(error => next(error))
 
     // persons = persons.concat(personToAdd)
     // response.json(personToAdd)
@@ -93,12 +94,8 @@ app.post("/api/persons", postMorgan, (request, response) => {
 })
 
 app.put("/api/persons/:id", (request, response, next) => {
-  const body = request.body
-  const person = {
-    name: body.name, 
-    number: body.number,
-  }
-  Person.findByIdAndUpdate(request.params.id, person, {new: true})
+  const {name, number} = request.body
+  Person.findByIdAndUpdate(request.params.id, {name, number}, {new: true, runValidators: true, context: "query"})
   .then(personToUpdate => {
     response.json(personToUpdate)
   })
@@ -114,6 +111,9 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
   if(error.name === "CastError") {
     return response.status(400).send({error: "Malformatted ID"})
+  }
+  else if (error.name === "ValidationError") {
+    return response.status(400).json({error: error.message})
   }
   next(error)
 }
