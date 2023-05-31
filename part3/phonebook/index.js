@@ -25,20 +25,7 @@ app.get("/info", (request, response) => {
 
 app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-  if(person) {
-    response.json(person)
-  }
-  else {
-    response.status(404).end()
-  }
-})
-
-app.delete("/api/persons/:id", (request, response) => {
-  // const id = Number(request.params.id)
-  // persons = Person.filter(person => person.id !== id)
-
-  // response.status(204).end()
+  // const person = persons.find(person => person.id === id)
   Person.findById(request.params.id)
   .then(person => {
     if(person) {
@@ -48,6 +35,14 @@ app.delete("/api/persons/:id", (request, response) => {
       response.status(404).end()
     }
   })
+})
+
+app.delete("/api/persons/:id", (request, response) => {
+  // const id = Number(request.params.id)
+  // persons = Person.filter(person => person.id !== id)
+  persons = Person.filter(person => person.id !== id)
+  
+  response.status(204).end()
 })
 
 // const generateId = () => {
