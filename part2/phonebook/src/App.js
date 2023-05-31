@@ -28,14 +28,14 @@ const Filter = ({textLabel, value, handleChange}) => {
   )
 }
 
-const PersonForm = ({onSubmitHandle, newName, newPhoneNumber, handleChangeName, handleChangeNumber }) => {
+const PersonForm = ({onSubmitHandle, newName, newNumber, handleChangeName, handleChangeNumber }) => {
   return (
     <form onSubmit={onSubmitHandle}>
         <div>
           Name: <input value={newName} onChange={handleChangeName} />
         </div>
         <div>
-          Phone Number: <input value={newPhoneNumber} onChange={handleChangeNumber} />
+          Phone Number: <input value={newNumber} onChange={handleChangeNumber} />
         </div>
         <div>
           <Button type="submit" text="Add"/>
@@ -55,7 +55,7 @@ const Persons = ({searchResult}) => {
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
-  const [newPhoneNumber, setNewPhoneNumber] = useState('')
+  const [newNumber, setNewNumber] = useState('')
   const [searchName, setSearchName] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null)
   
@@ -76,22 +76,22 @@ const App = () => {
     console.log("Button clicked", event.target);
     const newPerson = {
       name: newName,
-      phoneNumber: newPhoneNumber, 
+      number: newNumber, 
     }
     const checkDuplicateName = persons.find(props => props.name.toLowerCase() === newPerson.name.toLowerCase())
     
-    if(checkDuplicateName && checkDuplicateName.phoneNumber === newPerson.phoneNumber) {
+    if(checkDuplicateName && checkDuplicateName.number === newPerson.number) {
       window.alert(`${newName} is already present in the phonebook`)
     }
-    else if(checkDuplicateName && checkDuplicateName.phoneNumber !== newPerson.phoneNumber) {
+    else if(checkDuplicateName && checkDuplicateName.number !== newPerson.number) {
       if(window.confirm(`${newName} is already present in the phonebook, would you like to replace the old phone number with a new one?`)) {
-        const personToChange = {...checkDuplicateName, phoneNumber:newPhoneNumber}
+        const personToChange = {...checkDuplicateName, number:newNumber}
         personService
         .updatePerson(checkDuplicateName.id, personToChange) 
         .then(personToReturn => {
           setPersons(persons.map(n => n.id !== checkDuplicateName.id ? n : personToReturn))
           setNewName("")
-          setNewPhoneNumber("")
+          setNewNumber("")
           setNotificationMessage({
             text: `${checkDuplicateName.name}'s number was updated.`,
             type: "notification"
@@ -120,7 +120,7 @@ const App = () => {
         .then(personToReturn => {
           setPersons(persons.concat(personToReturn))
           setNewName("")
-          setNewPhoneNumber("")
+          setNewNumber("")
         })
         .catch(error => {
           setNotificationMessage({
@@ -167,7 +167,7 @@ const App = () => {
     
     const handlePhoneNumberAddition = (event) => {
       console.log(event.target.value);
-    setNewPhoneNumber(event.target.value);
+    setNewNumber(event.target.value);
   }
   
   const handleSearch = (event) => {
@@ -176,13 +176,13 @@ const App = () => {
   }
   const searched = searchName === "" ? persons : persons.filter(person => person.name.toLowerCase().includes(searchName.toLowerCase()))
   
-  const SinglePerson = ({name, phoneNumber, id}) => {
+  const SinglePerson = ({name, number, id}) => {
     return (
-      <p key={id}> {name} {phoneNumber} <Button type="submit" text="Delete Person" handleClick={() => deletePerson(id)}/> </p>
+      <p key={id}> {name} {number} <Button type="submit" text="Delete Person" handleClick={() => deletePerson(id)}/> </p>
     )
   }
   
-  const searchResult = searched.map(props => <SinglePerson key={props.id} name={props.name} phoneNumber={props.phoneNumber} id={props.id}/>)
+  const searchResult = searched.map(props => <SinglePerson key={props.id} name={props.name} number={props.number} id={props.id}/>)
 
   return (
     <div>
@@ -194,7 +194,7 @@ const App = () => {
       
       <h3>Add A New Person</h3>
       
-      <PersonForm onSubmitHandle={addPerson} newName={newName} newPhoneNumber={newPhoneNumber} handleChangeName={handleNameAddition} handleChangeNumber={handlePhoneNumberAddition} />
+      <PersonForm onSubmitHandle={addPerson} newName={newName} newNumber={newNumber} handleChangeName={handleNameAddition} handleChangeNumber={handlePhoneNumberAddition} />
 
       <h3>Numbers</h3>
       
