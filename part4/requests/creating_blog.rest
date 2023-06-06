@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/blogs/
+Content-Type: application/json
+
+{
+    "title": "Is Visual Studio Code Really The Best Code Editor?",
+    "author": "John Cena",
+    "url": "https://www.tabnine.com/blog/visual-studio-code-really-the-best-code-editor/",
+    "likes": 500
+
+}
