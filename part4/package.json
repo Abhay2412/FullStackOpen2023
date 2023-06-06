@@ -1,0 +1,24 @@
+{
+  "name": "part4",
+  "version": "1.0.0",
+  "description": "BlogApplicationPart4 Full Stack Open 2023",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "author": "Abhay Khosla",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "mongoose": "^7.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.42.0",
+    "nodemon": "^2.0.22"
+  }
+}
