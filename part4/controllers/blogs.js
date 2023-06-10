@@ -29,7 +29,7 @@ blogsRouter.post('/', async (request, response) => {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes ? body.likes: 0
+    likes: body.likes ? body.likes : 0
   })
 
   if(body.title === undefined || body.url === undefined) {
@@ -38,6 +38,25 @@ blogsRouter.post('/', async (request, response) => {
     const blogToSave = await blogToAdd.save()
     response.status(201).json(blogToSave)
   }
+})
+
+blogsRouter.delete('/:id', async (request, response) => {
+  await Blog.findByIdAndRemove(request.params.id)
+  response.status(204).end()
+})
+
+blogsRouter.put('/:id', async(request, response) => {
+  const body = request.body
+
+  const blogToUpdate = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes ? body.likes : 0
+  }
+
+  await Blog.findByIdAndUpdate(request.params.id, blogToUpdate, { new: true })
+  response.json(blogToUpdate)
 })
 
 module.exports = blogsRouter
