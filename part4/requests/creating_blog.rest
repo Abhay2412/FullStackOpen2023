@@ -5,6 +5,7 @@ Content-Type: application/json
     "title": "Is Visual Studio Code Really The Best Code Editor?",
     "author": "John Cena",
     "url": "https://www.tabnine.com/blog/visual-studio-code-really-the-best-code-editor/",
-    "likes": 500
+    "likes": 500,
+    "userId": "648782b908de948726be4570"
 
 }
