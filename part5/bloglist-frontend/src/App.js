@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import NewBlogForm from './components/NewBlogForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
@@ -9,17 +11,16 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
+  const [blogResetState, setBlogResetState] = useState(false)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )  
-  }, [])
+    blogService.getAll().then(blogs => {
+      blogs.sort((a,b) => b.likes - a.likes)
+      setBlogs(blogs) 
+    })
+  }, [blogResetState])
   
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -46,23 +47,67 @@ const App = () => {
       }, 5000)
     }
   }
-  const addNewBlog = (event) => {
-    event.preventDefault()
-    const blogToAdd = {
-      title: title, 
-      author: author, 
-      url: url, 
-      user: user.id, 
+
+  const blogFormRef = useRef()
+
+  const addNewBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    try {
+      blogService.create(blogObject)
+      .then(blogToReturn => {
+        setBlogs(blogs.concat(blogToReturn))
+        setNotificationMessage({ text: `New blog created successfully with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'notification' })
+        setBlogResetState(!blogResetState)
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+      })
     }
-    blogService.create(blogToAdd)
-    .then(blogToReturn => {
-      setBlogs(blogs.concat(blogToReturn))
-      setNotificationMessage({ text: `New blog created successfully with the title ${blogToAdd.title} from this author ${blogToAdd.author}`, type: 'notification' })
+    catch(error) {
+      console.error(error)
+      setNotificationMessage({ text: `Could not add the following blog with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'error' })
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
-    })
+    }
   }
+
+  const updateLikes = async(id, blogObject) => {
+    try {
+      await blogService.update(id, blogObject)
+      setBlogResetState(!blogResetState)
+      setNotificationMessage({ text: `Liked the following blog with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'notification' })
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
+    catch(error) {
+      console.error(error)
+      setNotificationMessage({ text: `Could not like the following blog with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'error' })
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
+  }
+
+  const deleteBlog = async (id, blogObject) => {
+    try {
+      await blogService.remove(id, blogObject)
+      setBlogResetState(!blogResetState)
+      setNotificationMessage({ text: `Deleted the following blog with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'notification' })
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
+    catch(error) {
+      console.error(error)
+      setNotificationMessage({ text: `Could not delete the following blog with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'error' })
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
+  }
+
   if(user == null) {
     return (
       <div>
@@ -89,23 +134,11 @@ const App = () => {
       <h2>Blogs</h2>
       <Notification message={notificationMessage}/>
       <p>{user.name} has logged into the application <button type='submit' onClick={handleLogout}>Logout</button></p>
-      <div>
-        <h2>Add a new blog</h2>
-        <form onSubmit={addNewBlog}>
-          <div>
-            Title: <input type='text' value={title} name='Title' onChange={({ target }) => setTitle(target.value)} />
-          </div>
-          <div>
-            Author: <input type='text' value={author} name='Author' onChange={({ target }) => setAuthor(target.value)} />
-          </div>
-          <div>
-            URL: <input type='text' value={url} name='URL' onChange={({ target }) => setUrl(target.value)} />
-          </div>
-          <button type='submit'>Add New Blog</button>
-        </form>
-      </div>
+      <Togglable buttonLabel = "New Blog" ref={blogFormRef}>
+        <NewBlogForm createNewBlog={addNewBlog} />
+      </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} isRemovableButtonStatus={blog.user && blog.user.username === user.username} />
       )}
     </div>
   )
