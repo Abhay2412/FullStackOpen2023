@@ -18,10 +18,10 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs => {
       blogs.sort((a,b) => b.likes - a.likes)
-      setBlogs(blogs) 
+      setBlogs(blogs)
     })
   }, [blogResetState])
-  
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if(loggedUserJSON) {
@@ -41,7 +41,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setNotificationMessage({ text: 'Incorrect username or password', type: 'error'})
+      setNotificationMessage({ text: 'Incorrect username or password', type: 'error' })
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
@@ -54,14 +54,14 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
     try {
       blogService.create(blogObject)
-      .then(blogToReturn => {
-        setBlogs(blogs.concat(blogToReturn))
-        setNotificationMessage({ text: `New blog created successfully with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'notification' })
-        setBlogResetState(!blogResetState)
-        setTimeout(() => {
-          setNotificationMessage(null)
-        }, 5000)
-      })
+        .then(blogToReturn => {
+          setBlogs(blogs.concat(blogToReturn))
+          setNotificationMessage({ text: `New blog created successfully with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'notification' })
+          setBlogResetState(!blogResetState)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 5000)
+        })
     }
     catch(error) {
       console.error(error)
@@ -108,7 +108,7 @@ const App = () => {
     }
   }
 
-  if(user == null) {
+  if(user === null) {
     return (
       <div>
         <h2>Log in to view Blogs</h2>
