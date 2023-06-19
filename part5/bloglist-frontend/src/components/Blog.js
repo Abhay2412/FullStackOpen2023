@@ -35,13 +35,13 @@ const Blog = ({ blog, updateLikes, deleteBlog, isRemovableButtonStatus }) => {
 
   return (
     <div style={blogStyle}>
-      <div style={hideWhenVisible}>
+      <div style={hideWhenVisible} className='defaultBlogView'>
         {blog.title} {blog.author} <button onClick={toggleVisibility}>View Blog Details</button>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className='detailedBlogView'>
         {blog.title} {blog.author} <button onClick={toggleVisibility}>Hide Blog Details</button>
         <p>{blog.url}</p>
-        <p> {blog.likes} <button onClick={handleLike}>Like</button></p>
+        <p> {blog.likes} Likes <button onClick={handleLike}>Like</button></p>
         <p>{blog.user !== null && blog.user.name}</p>
         <p> </p>
         {isRemovableButtonStatus && (
