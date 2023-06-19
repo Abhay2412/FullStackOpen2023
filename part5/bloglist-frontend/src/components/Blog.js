@@ -19,9 +19,9 @@ const Blog = ({ blog, updateLikes, deleteBlog, isRemovableButtonStatus }) => {
 
   const handleLike = () => {
     const blogToUpdate = {
-      title: blog.title, 
-      author: blog.author, 
-      url: blog.url, 
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
       likes: blog.likes + 1,
     }
     updateLikes(blog.id, blogToUpdate)
@@ -34,11 +34,11 @@ const Blog = ({ blog, updateLikes, deleteBlog, isRemovableButtonStatus }) => {
   }
 
   return (
-  <div style={blogStyle}>
-    <div style={hideWhenVisible}>
-      {blog.title} {blog.author} <button onClick={toggleVisibility}>View Blog Details</button>
-    </div>
-    <div style={showWhenVisible}>
+    <div style={blogStyle}>
+      <div style={hideWhenVisible}>
+        {blog.title} {blog.author} <button onClick={toggleVisibility}>View Blog Details</button>
+      </div>
+      <div style={showWhenVisible}>
         {blog.title} {blog.author} <button onClick={toggleVisibility}>Hide Blog Details</button>
         <p>{blog.url}</p>
         <p> {blog.likes} <button onClick={handleLike}>Like</button></p>
@@ -51,7 +51,7 @@ const Blog = ({ blog, updateLikes, deleteBlog, isRemovableButtonStatus }) => {
         )}
         <p> </p>
       </div>
-  </div>  
+    </div>
   )
 }
 

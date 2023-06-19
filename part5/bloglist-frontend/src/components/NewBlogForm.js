@@ -20,32 +20,32 @@ const NewBlogForm = ({ createNewBlog }) => {
   const addNewBlog = (event) => {
     event.preventDefault()
     createNewBlog({
-      title: title, 
-      author: author, 
-      url: url, 
+      title: title,
+      author: author,
+      url: url,
     })
     setTitle('')
     setAuthor('')
     setUrl('')
   }
 
-    return (
+  return (
     <div>
-        <h2>Add a new blog</h2>
-        <form onSubmit={addNewBlog}>
-          <div>
+      <h2>Add a new blog</h2>
+      <form onSubmit={addNewBlog}>
+        <div>
             Title: <input type='text' value={title} name='Title' onChange={handleTitle} />
-          </div>
-          <div>
+        </div>
+        <div>
             Author: <input type='text' value={author} name='Author' onChange={handleAuthor} />
-          </div>
-          <div>
+        </div>
+        <div>
             URL: <input type='text' value={url} name='URL' onChange={handleUrl} />
-          </div>
-          <button type='submit'>Add New Blog</button>
-        </form>
-      </div>
-    )
+        </div>
+        <button type='submit'>Add New Blog</button>
+      </form>
+    </div>
+  )
 }
 
 export default NewBlogForm
