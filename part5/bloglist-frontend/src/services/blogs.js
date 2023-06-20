@@ -27,8 +27,7 @@ const create = async newObject => {
   return response.data
 }
 
-// eslint-disable-next-line no-unused-vars
-const remove = async(id, blog) => {
+const remove = async(id) => {
   const config = {
     headers: { Authorization: token },
   }
