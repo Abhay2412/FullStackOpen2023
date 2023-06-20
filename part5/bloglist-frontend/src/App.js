@@ -68,7 +68,7 @@ const App = () => {
       setNotificationMessage({ text: `Could not add the following blog with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'error' })
       setTimeout(() => {
         setNotificationMessage(null)
-      }, 5000)
+      }, 3000)
     }
   }
 
@@ -90,18 +90,19 @@ const App = () => {
     }
   }
 
-  const deleteBlog = async (id, blogObject) => {
+  const deleteBlog = async (blogObjectToDelete) => {
     try {
-      await blogService.remove(id, blogObject)
+      await blogService.remove(blogObjectToDelete.id)
       setBlogResetState(!blogResetState)
-      setNotificationMessage({ text: `Deleted the following blog with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'notification' })
+      setNotificationMessage({ text: `Deleted the following blog with the title ${blogObjectToDelete.title} from this author ${blogObjectToDelete.author}`, type: 'notification' })
+      setBlogs(blogs.filter(blog => blog.id !== blogObjectToDelete.id))
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
     }
     catch(error) {
       console.error(error)
-      setNotificationMessage({ text: `Could not delete the following blog with the title ${blogObject.title} from this author ${blogObject.author}`, type: 'error' })
+      setNotificationMessage({ text: `Could not delete the following blog with the title ${blogObjectToDelete.title} from this author ${blogObjectToDelete.author}`, type: 'error' })
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
@@ -115,12 +116,12 @@ const App = () => {
         <Notification message={notificationMessage} />
         <form onSubmit={handleLogin}>
           <div>
-            Username <input type='text' value={username} name='Username' onChange={({ target }) => setUsername(target.value)} />
+            Username <input type='text' value={username} name='Username' onChange={({ target }) => setUsername(target.value)} id='username'/>
           </div>
           <div>
-            Password <input type='password' value={password} name='Password' onChange={({ target }) => setPassword(target.value)} />
+            Password <input type='password' value={password} name='Password' onChange={({ target }) => setPassword(target.value)} id='password'/>
           </div>
-          <button type='submit'>Login</button>
+          <button type='submit' id='login-button'>Login</button>
         </form>
       </div>
     )

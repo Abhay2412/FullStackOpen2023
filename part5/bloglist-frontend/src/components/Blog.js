@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, updateLikes, deleteBlog, isRemovableButtonStatus }) => {
   const blogStyle = {
@@ -29,30 +30,36 @@ const Blog = ({ blog, updateLikes, deleteBlog, isRemovableButtonStatus }) => {
 
   const handleDelete = () => {
     if(window.confirm(`Remove blog with the following title ${blog.title} by this author ${blog.author}`)) {
-      deleteBlog(blog.id)
+      deleteBlog(blog)
     }
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       <div style={hideWhenVisible} className='defaultBlogView'>
         {blog.title} {blog.author} <button onClick={toggleVisibility}>View Blog Details</button>
       </div>
       <div style={showWhenVisible} className='detailedBlogView'>
         {blog.title} {blog.author} <button onClick={toggleVisibility}>Hide Blog Details</button>
         <p>{blog.url}</p>
-        <p> {blog.likes} Likes <button onClick={handleLike}>Like</button></p>
+        <p id='likes-count'> {blog.likes} Likes <button onClick={handleLike}>Like</button></p>
         <p>{blog.user !== null && blog.user.name}</p>
         <p> </p>
         {isRemovableButtonStatus && (
           <div>
-            <button style={{ backgroundColor: '#2D77ED' }} onClick={handleDelete}>Remove Blog</button>
+            <button style={{ backgroundColor: '#2D77ED' }} onClick={handleDelete} id='remove-blog-button'>Remove Blog</button>
           </div>
         )}
         <p> </p>
       </div>
     </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  updateLikes: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired
 }
 
 export default Blog
