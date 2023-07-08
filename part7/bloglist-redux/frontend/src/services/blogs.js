@@ -8,12 +8,12 @@ const setToken = newToken => {
 }
 
 
-const getAll = () => {
-  const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+const getAll = async() => {
+  const response = await axios.get(baseUrl)
+  return response.data
 }
 
-const update = async (newObject) => {
+const update = async(newObject) => {
   const response = await axios.put(`${baseUrl}/${newObject.id}`, newObject)
   return response.data
 }
@@ -35,4 +35,17 @@ const remove = async(id) => {
   return response.data
 }
 
-export default { getAll, setToken, update, create, remove }
+const getId = () => (100000 * Math.random()).toFixed(0)
+
+const getComment = async(id) => {
+  const response = await axios.get(`${baseUrl}/${id}/comments`)
+  return response.data
+}
+
+const createComment = async(id, content) => {
+  const newCommentToAdd = { content, id:getId() }
+  const response = await axios.post(`${baseUrl}/${id}/comments`, newCommentToAdd)
+  return response.data
+}
+
+export default { getAll, setToken, update, create, remove, getId, getComment, createComment }

@@ -2,7 +2,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { updateLikes } from '../reducers/blogReducer'
 import { setNotificationMessage } from '../reducers/notificationReducer'
-import { Button } from '@mui/material'
+import { Container, Button } from '@mui/material'
+import DisplayComments from './DisplayComments'
+
 const SingleBlogView = () => {
   const dispatch = useDispatch()
 
@@ -22,12 +24,13 @@ const SingleBlogView = () => {
   }
 
   return (
-    <div>
+    <Container>
       <h2>{blog.title} {blog.author}</h2>
       <p>{blog.url}</p>
       <p>{blog.likes} <Button variant='outlined' onClick={handleLike}>Like</Button></p>
       <p>this blog has been added by the following user {blog.user !== null && blog.user.name}</p>
-    </div>
+      <DisplayComments id={blog.id}/>
+    </Container>
   )
 }
 

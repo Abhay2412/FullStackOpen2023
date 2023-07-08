@@ -14,7 +14,7 @@ const SingleUserView = () => {
   return (
     <div>
       <h2>{singleUserToDisplay.username}</h2>
-      <h3>has added this many blogs</h3>
+      <h3>has added these following blogs: </h3>
       <ul>
         {singleUserToDisplay.blogs.map(blog => <li key={blog.id} >{blog.title}</li>)}
       </ul>

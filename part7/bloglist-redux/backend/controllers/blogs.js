@@ -1,6 +1,7 @@
 /* eslint-disable semi */
-const blogsRouter = require("express").Router();
-const Blog = require("../models/blog");
+const blogsRouter = require('express').Router();
+const Blog = require('../models/blog');
+const Comment = require('../models/comment');
 
 // blogsRouter.get('/', (request, response) => {
 //   Blog.find({})
@@ -9,8 +10,8 @@ const Blog = require("../models/blog");
 //     })
 // })
 
-blogsRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({}).populate("user", {
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog.find({}).populate('comment').populate('user', {
     username: 1,
     name: 1,
     id: 1,
@@ -18,8 +19,8 @@ blogsRouter.get("/", async (request, response) => {
   response.json(blogs);
 });
 
-blogsRouter.get("/:id", async (request, response) => {
-  const blog = await Blog.findById(request.params.id);
+blogsRouter.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id).populate('comment');
   if (blog) {
     response.json(blog);
   } else {
@@ -27,12 +28,15 @@ blogsRouter.get("/:id", async (request, response) => {
   }
 });
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post('/', async (request, response) => {
   const body = request.body;
 
   const user = request.user;
+
+  const comment = await Comment.findById(body.commentId)
+
   if (!user) {
-    return response.status(401).json({ error: "token missing or invalid" });
+    return response.status(401).json({ error: 'token missing or invalid' });
   }
 
   const blogToAdd = new Blog({
@@ -41,6 +45,7 @@ blogsRouter.post("/", async (request, response) => {
     url: body.url,
     likes: body.likes ? body.likes : 0,
     user: user.id,
+    comment: comment.id
   });
 
   if (body.title === undefined || body.url === undefined) {
@@ -49,14 +54,16 @@ blogsRouter.post("/", async (request, response) => {
     const blogToSave = await blogToAdd.save();
     user.blogs = user.blogs.concat(blogToSave._id);
     await user.save();
+    comment.blogs = comment.blogs.concat(blogToSave._id)
+    await comment.save()
     response.status(201).json(blogToSave);
   }
 });
 
-blogsRouter.delete("/:id", async (request, response) => {
+blogsRouter.delete('/:id', async (request, response) => {
   const user = request.user;
   if (!user) {
-    return response.status(401).json({ error: "token missing or invalid" });
+    return response.status(401).json({ error: 'token missing or invalid' });
   }
   const blogToDelete = await Blog.findById(request.params.id);
   if (blogToDelete.user.toString() === request.user.id) {
@@ -65,11 +72,11 @@ blogsRouter.delete("/:id", async (request, response) => {
   } else {
     return response
       .status(401)
-      .json({ error: "Not authorized to delete the blog" });
+      .json({ error: 'Not authorized to delete the blog' });
   }
 });
 
-blogsRouter.put("/:id", async (request, response) => {
+blogsRouter.put('/:id', async (request, response) => {
   const body = request.body;
 
   const blogToUpdate = {

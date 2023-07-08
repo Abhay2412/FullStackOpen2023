@@ -28,7 +28,7 @@ const App = () => {
   const Home = () => {
     return (
       <div>
-        <h2>Blogs Application</h2>
+        <h1>Blogs Application</h1>
         <p>{loggedInUser.name} has logged into the application </p>
         <Button variant='outlined' type='submit' onClick={handleLogout}>Logout</Button>
         <p> </p>
