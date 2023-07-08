@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFrb29sMDciLCJpZCI6IjY0ODc4MmI5MDhkZTk0ODcyNmJlNDU3MCIsImlhdCI6MTY4Njc1NDU0NiwiZXhwIjoxNjg2NzU4MTQ2fQ.OpUSuqToC2hpEb5lRkelKpxd7Q-dlQuIsCRvcDt8ikA
+
+{
+    "title": "BCCI to sack Rohit Sharma after West Indies series",
+    "author": "John Cena",
+    "url": "https://crictoday.com/cricket/news/bcci-to-sack-rohit-sharma-after-west-indies-series/",
+    "likes": 750
+}
