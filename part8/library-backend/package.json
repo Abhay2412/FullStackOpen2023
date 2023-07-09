@@ -1,0 +1,17 @@
+{
+  "name": "library-backend",
+  "version": "1.0.0",
+  "description": "A GraphQL backend for a small library",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "author": "Abhay Khosla",
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/server": "^4.7.5",
+    "graphql": "^16.7.1",
+    "nodemon": "^3.0.0",
+    "uuid": "^9.0.0"
+  }
+}
