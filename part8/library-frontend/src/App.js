@@ -4,8 +4,8 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import RecommendedGenre from './components/RecommendedGenre'
-import { useQuery, useApolloClient } from '@apollo/client'
-import { ALL_AUTHORS, ALL_BOOKS, USER } from './queries'
+import { useQuery, useApolloClient, useSubscription } from '@apollo/client'
+import { BOOK_ADDED, ALL_AUTHORS, ALL_BOOKS, USER } from './queries'
 
 const Notify = ({errorMessage}) => {
   if ( !errorMessage ) {
@@ -18,6 +18,24 @@ const Notify = ({errorMessage}) => {
   )
 }
 
+export const updateCache = (cache, query, addedBook) => {
+  const uniqByTitle = (b) => {
+    let seen = new Set()
+    return b.filter((item) => {
+      let k = item.title
+      return seen.has(k) ? false: seen.add(k)
+    })
+  }
+
+  cache.updateQuery(query, ({ allBooks }) => {
+    return {
+      allBooks: uniqByTitle(allBooks.concat(addedBook))
+    }
+  })
+}
+
+
+
 const App = () => {
   const [page, setPage] = useState('authors')
   const authors = useQuery(ALL_AUTHORS)
@@ -26,6 +44,24 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [token, setToken] = useState(null)
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const addedBook = data.data.BOOK_ADDED
+      try {
+        window.alert(`${addedBook.title} has been added`)
+        updateCache(client.cache, { query: ALL_BOOKS }, addedBook)
+      }
+      catch {
+        console.log('Error')
+      }
+      client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(addedBook)
+        }
+      })
+    }
+  })
 
   if(authors.loading || books.loading) {
     return <div>The data is being loaded...</div>
@@ -62,7 +98,7 @@ const App = () => {
 
       <LoginForm show={page === 'login'} setToken={setToken} setError={notify} />
 
-      <RecommendedGenre show={page === 'recommend'} favoriteGenre={user.data.me.favoriteGenre} books={books.data.allBooks} />
+      <RecommendedGenre show={page === 'recommend'} user={user.data.me} books={books.data.allBooks} />
     </div>
   )
 }

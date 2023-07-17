@@ -1,4 +1,5 @@
-const RecommendedGenre = ({ show, favoriteGenre, books }) => {
+const RecommendedGenre = ({ show, user, books }) => {
+    const favoriteGenre = user ? user.favoriteGenre : null
     if(!show) {
         return null
     }
