@@ -1,6 +1,5 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
@@ -218,7 +217,7 @@ const server = new ApolloServer({
 })
 
 startStandaloneServer(server, {
-  listen: { port: 4000 },
+  listen: { port: process.env.PORT },
   context: async({ request, response }) => {
     const auth = request ? request.headers.authorization : null
     if (auth && auth.startsWith('Bearer ')) {
