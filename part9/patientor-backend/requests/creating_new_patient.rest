@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+    "name": "Randy Orton",
+    "ssn": "8754879",
+    "dateOfBirth": "1980-04-01",
+    "occupation": "Wrestler",
+    "gender": "male"
+}
